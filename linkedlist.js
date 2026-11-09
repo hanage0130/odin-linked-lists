@@ -8,6 +8,7 @@ class Node {
 class LinkedList {
     constructor() {
         this.list = [new Node(null, 1), new Node(null, null)];
+        this.len = 0;
     }
     append(value) {
         let pos = 0;
@@ -16,10 +17,15 @@ class LinkedList {
         }
         this.list.push(new Node(value, this.list[pos].nextNode));
         this.list[pos].nextNode = this.list.length - 1;
+        this.len++;
     }
     prepend(value) {
         this.list.push(new Node(value, this.list[0].nextNode));
         this.list[0].nextNode = this.list.length - 1;
+        this.len++;
+    }
+    size() {
+        return this.len;
     }
     head() {
         let pos = this.list[0].nextNode;
@@ -60,6 +66,7 @@ class LinkedList {
             return undefined;
         }
         this.list[0].nextNode = this.list[pos].nextNode;
+        this.len--;
         return this.list[pos].value;
     }
     contains(value) {
@@ -84,10 +91,32 @@ class LinkedList {
         return -1;
     }
     insertAt(index, ...values) {
-        let pos = this.at(index);
-        if (pos === undefined) {
-            
+        if (index < 0 || this.size() < index) {
+            throw new RangeError();
         }
+        let pos = 0;
+        for (let i = 0; i < index; i++) {
+            pos = this.list[pos].nextNode;
+        }
+        for (const value of values) {
+            this.list.push(new Node(value, this.list[pos].nextNode));
+            this.list[pos].nextNode = this.list.length - 1;
+            pos = this.list[pos].nextNode;
+            this.len++;
+        }
+    }
+    removeAt(index) {
+        if (index < 0 || this.size() <= index) {
+            throw new RangeError();
+        }
+        let pos = 0;
+        for (let i = 0; i < index; i++) {
+            pos = this.list[pos].nextNode;
+        }
+        this.list[pos].nextNode = this.list[this.list[pos].nextNode].nextNode;
+        this.len--;
+        return this.list[pos].value;
+
     }
     toString() {
         let str = "", pos = this.list[0].nextNode;
@@ -108,7 +137,34 @@ class LinkedList {
 const list = new LinkedList();
 
 list.dump();
-list.append(42);
-list.dump();
+list.append("dog");
+list.append("cat");
+list.append("parrot");
+list.append("hamster");
+list.append("snake");
+list.append("turtle");
 list.prepend("Alex");
+console.log(list.size());
+console.log(list.head());
+console.log(list.tail());
+for (let i = 1; i <= list.size() + 1; i++) {
+    console.log(list.at(i));
+}
+list.pop();
+console.log(list.size());
+console.log(list.head());
+console.log(list.contains("Alex"));
+console.log(list.contains("dog"));
+console.log(list.findIndex("Steve"));
+console.log(list.findIndex("cat"));
+console.log(list.toString());
+list.dump();
+list.insertAt(0, "Alice");
+list.dump();
+// list.insertAt(-1, "Mario");
+list.insertAt(1, "Mario", "Luigi", "Tanaka");
+list.dump();
+list.removeAt(0);
+list.dump();
+list.removeAt(4);
 list.dump();
